@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:tracing="http://www.mulesoft.org/schema/mule/tracing" xmlns:music-store-system-api="http://www.mulesoft.org/schema/mule/music-store-system-api"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:csv-music-api="http://www.mulesoft.org/schema/mule/csv-music-api" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/csv-music-api http://www.mulesoft.org/schema/mule/csv-music-api/current/mule-csv-music-api.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/music-store-system-api http://www.mulesoft.org/schema/mule/music-store-system-api/current/mule-music-store-system-api.xsd
+http://www.mulesoft.org/schema/mule/tracing http://www.mulesoft.org/schema/mule/tracing/current/mule-tracing.xsd">
+	<flow name="get-articles" doc:id="24371a21-6901-46d7-81e9-b647e875b0e1" >
+		<set-variable value="#[attributes.uriParams.'artist' default 'Metallica']" doc:name="artist" doc:id="f5a98320-3b53-4496-986c-b52dab179fc7" variableName="artist"/>
+		<scatter-gather doc:name="Scatter-Gather" doc:id="e6b721b4-7db5-406d-bf91-3ff4452ec6d6">
+			<route >
+				<flow-ref doc:name="to-csv" doc:id="deae1b65-628d-46e4-9828-4ed936edaae9" name="csv" />
+			</route>
+			<route >
+				<flow-ref doc:name="to-http" doc:id="e4e8de76-ca17-475b-8bf5-28bf3ea9436d" name="http" />
+			</route>
+		</scatter-gather>
+		<ee:transform doc:name="flatten" doc:id="5f575b12-ac9e-4f14-9140-5ef1504c0a73" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+flatten(payload..payload)]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="csv" doc:id="51c69f7d-e424-4642-babb-958a29bb6c2d" >
+		<tracing:with-correlation-id doc:name="CSV CorrelationID" doc:id="63edff76-de68-4444-af17-9d93f92420a1" correlationId="#['csv-' ++ uuid()]">
+			<csv-music-api:get-products-for-an-artist doc:name="GET products" doc:id="a9f15b2c-a200-4ad4-82d4-a5cfc112df0a" config-ref="CSV_Music_API_Config" artist="#[vars.artist]" client-id="${csv.client_id}" client-secret="${csv.client_secret}" />
+			<ee:transform doc:name="add-vendor" doc:id="0f85e17c-6b81-479f-b551-244a726d0c73">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload map ($ ++ {"vendor": "Cheap Trills Music Shop"})]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+			<logger level="INFO" doc:name="Logger" doc:id="f8501d1c-cf06-497e-a8ac-4a875efd613e"/>
+		</tracing:with-correlation-id>
+	</flow>
+	<flow name="http" doc:id="72f31fe1-4e7e-4d30-a960-56c8feaaf90f" >
+		<tracing:with-correlation-id doc:name="Music Store CorrelationID" doc:id="f4f2aa5a-6a13-481a-bfb5-1ab756daa9b3" correlationId="#['music-' ++ uuid()]">
+			<music-store-system-api:get-products-by-artist-name doc:name="GET products by artist name" doc:id="e75d60d8-0f5c-49d3-b1b6-356057bca662" config-ref="Music_Store_System_API_Config" sc-name="#[vars.artist]" client-id="758d664d12b9478299c81069a07e75f7" client-secret="D87419aDC09D4A4Fa5775898a2F38304" />
+			<ee:transform doc:name="add-vendor-and-transform" doc:id="9e9699fa-02b3-417d-a76a-9c66631a3415">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload map {
+	title: $.name,
+	artist: $.artist.name,
+	price: $.unit_price,
+	quantity: $.units_in_stock,
+	category: $.category.name,
+	vendor: "Havana Music Shop"
+} ]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+			<logger level="INFO" doc:name="Logger" doc:id="bffe1458-7b16-4a0c-8dc8-c0df21a76fd2" />
+		</tracing:with-correlation-id>
+	</flow>
+</mule>

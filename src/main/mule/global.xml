@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:music-store-system-api="http://www.mulesoft.org/schema/mule/music-store-system-api" xmlns:csv-music-api="http://www.mulesoft.org/schema/mule/csv-music-api"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/csv-music-api http://www.mulesoft.org/schema/mule/csv-music-api/current/mule-csv-music-api.xsd
+http://www.mulesoft.org/schema/mule/music-store-system-api http://www.mulesoft.org/schema/mule/music-store-system-api/current/mule-music-store-system-api.xsd">
+	<configuration-properties doc:name="Configuration properties" doc:id="7c3b1e46-1aa4-4df6-8447-674156fe3530" file="application.yaml" />
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="c1b7fd98-945a-4dfc-af0d-af85a8e110d6" >
+		<http:listener-connection host="0.0.0.0" port="${http.port}" />
+	</http:listener-config>
+	<csv-music-api:config name="CSV_Music_API_Config" doc:name="CSV Music API Config" doc:id="69afb6fd-45f0-411f-8fd7-f29352a72c10" property_host="${csv.host}" property_protocol="${csv.protocol}" property_basePath="/api" property_port="${csv.port}"/>
+	<music-store-system-api:config name="Music_Store_System_API_Config" doc:name="Music Store System API Config" doc:id="ee2bb981-13ff-49fe-9277-f7b6e7b5cc4b" property_host="${music.host}" property_port="${music.port}" property_protocol="${music.protocol}" property_basePath="/api"/>
+</mule>

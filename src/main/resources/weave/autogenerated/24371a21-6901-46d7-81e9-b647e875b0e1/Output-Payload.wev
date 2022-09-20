@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_24371a21_6901_46d7_81e9_b647e875b0e1_Output_Payload = Array<{  quantity: Number,   artist: String,   price: Number,   vendor: String,   title: String,   category: String,   _?: Any} {"description": "Main resource type"}>
+

@@ -1,0 +1,17 @@
+# HTTP Listener Config
+http:
+  port: "8081"
+  
+# CSV api config
+csv:
+  host: "csv-system-app.us-e2.cloudhub.io"
+  port: ""
+  protocol: 'HTTP'
+  client_id: "a883253d751f4b5e8584771185bc90c1"
+  client_secret: "C9E447b0f2e34fea8cE0693Ba837Fd64"
+  
+# Music Shop http config
+music:
+  host: "music-shop-system-app-fcw99m.5sc6y6-1.usa-e2.cloudhub.io"
+  port: ""
+  protocol: "HTTPS"

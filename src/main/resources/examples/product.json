@@ -1,0 +1,20 @@
+{
+  "id": 2,
+  "sku": "LP-000001",
+  "name": "Live after Death",
+  "description": "Famous live album form mid-80's",
+  "active": true,
+  "image_url": "https://community.mp3tag.de/uploads/default/original/2X/a/acf3edeb055e7b77114f9e393d1edeeda37e50c9.png",
+  "unit_price": 35.99,
+  "units_in_stock": 3,
+  "date_created": "2022-04-12T09:13:43.000Z",
+  "last_updated": "2022-08-12T09:17:59.161Z",
+  "artist": {
+    "id": 2,
+    "name": "Iron Maiden"
+  },
+  "category": {
+    "id": 2,
+    "name": "LP"
+  }
+}
